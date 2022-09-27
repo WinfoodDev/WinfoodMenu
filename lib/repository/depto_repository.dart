@@ -7,7 +7,7 @@ import '../custom_dio.dart';
 import '../model/produtos_model.dart';
 
 class DeptoRepository{
-  Future<List<DepartamentosModel>> getDeptosFuture() async {
+  Future<List<DepartamentosModel>> getDeptosFuture(String codLoja) async {
 
     var _dio = CustomDio().getInstance();
     _dio.options
@@ -17,8 +17,6 @@ class DeptoRepository{
       ..validateStatus = (int? status) {
         return status! > 0;
       };
-
-    int codLoja = 1;
 
     log('Codloja /DEPARTAMENTOS: ' + codLoja.toString());
 

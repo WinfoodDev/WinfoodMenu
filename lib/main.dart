@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 import 'package:winfood_menu/pages/home_page.dart';
+import 'package:winfood_menu/pages/initial_page.dart';
 
 
 
 void main() {
   setUrlStrategy(PathUrlStrategy());
-  print(Uri.base.toString());
-  print(Uri.base.query);
   String query = Uri.base.query;
   runApp(MyApp(codloja: query,));
 }

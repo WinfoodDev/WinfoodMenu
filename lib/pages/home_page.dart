@@ -54,18 +54,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
   void initState() {
     // TODO: implement initState
     formatter = NumberFormat.simpleCurrency(locale: "pt_Br");
-    codloja = widget.codloja!;
-    
+    codloja = widget.codloja??'';
     repositoryLoja = LojaRepository();
-    // lojaFuture = repositoryLoja.getLojaFuture(widget.codloja!);
-    
     repositoryDepto = DeptoRepository();
-    // departamentosFuture = repositoryDepto.getDeptosFuture();
-    
     repositoryProdutos = ProdutosRepository();
-    // maisPedidosFuture = repositoryProdutos.getProdutosFuture('favoritos');
-    // promocaoFuture = repositoryProdutos.getProdutosFuture('promocao');
-    // produtosFuture = repositoryProdutos.getProdutosFuture('');
     super.initState();
   }
 
@@ -246,10 +238,11 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
   Widget build(BuildContext context) {
     size = MediaQuery.of(context).size;
     return Scaffold(
-      body: FutureBuilder(
+      body: codloja.isNotEmpty
+          ? FutureBuilder(
         future: Future.wait([
-          lojaFuture = repositoryLoja.getLojaFuture(widget.codloja!),
-          departamentosFuture = repositoryDepto.getDeptosFuture(),
+          lojaFuture = repositoryLoja.getLojaFuture(codloja),
+          departamentosFuture = repositoryDepto.getDeptosFuture(codloja),
           produtosFuture = repositoryProdutos.getProdutosFuture('',codloja),
           produtosFuture = repositoryProdutos.getProdutosFuture('promocao',codloja),
           produtosFuture = repositoryProdutos.getProdutosFuture('favoritos',codloja),
@@ -540,7 +533,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
           );
 
         },
-      ),
+      )
+          : Container(child: Center(child: Text('Error Codloja não encontrado!'),)),
     );
   }
 }
