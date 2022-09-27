@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.deepOrange,
       ),
       routes: {
-        '/':(_)=>HomePage(codloja: codloja,)
+        '/':(_)=>HomePage(codloja: '1',)
       },
     );
   }
