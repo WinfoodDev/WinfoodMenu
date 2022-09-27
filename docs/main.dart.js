@@ -19285,9 +19285,8 @@ R1:function R1(){},
 R0:function R0(){},
 R_:function R_(){},
 aep:function aep(){this.a=null},
-FK:function FK(a,b){this.c=a
-this.a=b},
-ZL:function ZL(a){this.a=a},
+FK:function FK(a){this.a=a},
+ZL:function ZL(){},
 nX:function nX(){var _=this
 _.x=_.r=_.f=_.e=_.d=_.c=_.b=_.a=null
 _.y=0},
@@ -19701,7 +19700,7 @@ r=B.c.iK(a,b,r+1)}return null},
 ax3(){var s,r=new Uint8Array(16),q=$.aoa()
 for(s=0;s<16;++s)r[s]=q.Le(256)
 return r},
-adh(){var s=0,r=A.Y(t.H),q,p,o,n,m,l,k,j,i,h,g
+adh(){var s=0,r=A.Y(t.H),q,p,o,n,m,l,k,j,i,h
 var $async$adh=A.S(function(a,b){if(a===1)return A.V(b,r)
 while(true)switch(s){case 0:s=2
 return A.R(A.aC9(),$async$adh)
@@ -19718,18 +19717,18 @@ n={getPath:A.eh(q.gC0(q)),getState:A.eh(q.gC3(q)),addPopStateListener:A.eh(q.gIi
 n=n
 self._flutter_web_set_location_strategy.$1(n)
 q=A.Jk()
-m=q.gk8(q)
+q.gk8(q)
 if($.aq==null){q=A.b([],t.GA)
 p=$.J
-l=A.b([],t.Jh)
-k=A.ab(7,null,!1,t.JI)
-j=t.S
-i=A.cS(j)
-h=t.j1
-g=A.b([],h)
-h=A.b([],h)
-new A.Js(null,q,!0,new A.ay(new A.N(p,t.U),t.h),!1,null,!1,!1,null,$,null,!1,0,!1,$,null,new A.Oi(A.aK(t.q)),$,$,$,$,null,l,null,A.aAh(),new A.EQ(A.aAg(),k,t.G7),!1,0,A.w(j,t.h1),i,g,h,null,!1,B.c4,!0,!1,null,B.o,B.o,null,0,null,!1,null,A.h9(null,t.W2),new A.a00(A.w(j,t.rr),A.w(t.Ld,t.iD)),new A.VX(A.w(j,t.cK)),new A.a03(),A.w(j,t.Fn),$,!1,B.yF).RO()}q=$.aq
-q.NA(new A.FK(m,null))
+m=A.b([],t.Jh)
+l=A.ab(7,null,!1,t.JI)
+k=t.S
+j=A.cS(k)
+i=t.j1
+h=A.b([],i)
+i=A.b([],i)
+new A.Js(null,q,!0,new A.ay(new A.N(p,t.U),t.h),!1,null,!1,!1,null,$,null,!1,0,!1,$,null,new A.Oi(A.aK(t.q)),$,$,$,$,null,m,null,A.aAh(),new A.EQ(A.aAg(),l,t.G7),!1,0,A.w(k,t.h1),j,h,i,null,!1,B.c4,!0,!1,null,B.o,B.o,null,0,null,!1,null,A.h9(null,t.W2),new A.a00(A.w(k,t.rr),A.w(t.Ld,t.iD)),new A.VX(A.w(k,t.cK)),new A.a03(),A.w(k,t.Fn),$,!1,B.yF).RO()}q=$.aq
+q.NA(new A.FK(null))
 q.Cd()
 return A.W(null,r)}})
 return A.X($async$adh,r)}},J={
@@ -63987,9 +63986,9 @@ $S:69}
 A.aep.prototype={}
 A.FK.prototype={
 J(a,b){var s=A.akD(null,B.aM)
-return new A.vS(A.aJ(["/",new A.ZL(this)],t.N,t.Ab),"Cardapio",s,!1,null)}}
+return new A.vS(A.aJ(["/",new A.ZL()],t.N,t.Ab),"Cardapio",s,!1,null)}}
 A.ZL.prototype={
-$1(a){return new A.m8(this.a.c,null)},
+$1(a){return new A.m8("1",null)},
 $S:399}
 A.nX.prototype={
 iW(){var s=this,r=new A.ci(t.dl)
