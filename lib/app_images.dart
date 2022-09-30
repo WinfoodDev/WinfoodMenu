@@ -183,19 +183,23 @@ class AppImages {
 
   Widget imageLogo(Loja loja, BuildContext context) {
     return ClipRRect(
-      borderRadius: BorderRadius.circular(50.0),
+      borderRadius: BorderRadius.circular(90.0),
       child: CachedNetworkImage(
-        height: 60,
-        width: 60,
+        height: 130,
+        width: 130,
         imageUrl: GlobalBaseURLNuvem.baseURLNuvem + loja.imgLogo.toString(),
         fit: BoxFit.cover,
         placeholder: (context, url) => Image.asset(
           'assets/images/not-found.png',
           fit: BoxFit.cover,
+          height: 130,
+          width: 130,
         ),
         errorWidget: (context, error, stackTrace) => Image.asset(
           'assets/images/not-found.png',
           fit: BoxFit.cover,
+          height: 130,
+          width: 130,
         ),
       ),
     );

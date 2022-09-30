@@ -11,6 +11,7 @@ import '../model/loja_model.dart';
 import '../model/produtos_model.dart';
 import '../repository/depto_repository.dart';
 import '../repository/produtos_repository.dart';
+import '../responsive.dart';
 
 class HomePage extends StatefulWidget {
   String?codloja;
@@ -72,15 +73,33 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
     List<Widget>views = [];
 
     departamentos.forEach((d) {
+
       List<Widget>rows = [];
-      rows.add(Container(margin: EdgeInsets.all(8),alignment: Alignment.centerLeft,child: Text(d.nome!,style: TextStyle(color: Colors.deepOrange, fontSize: 22),)));
+
+      rows.add(
+          Container(
+              margin: EdgeInsets.all(8),
+              alignment: Alignment.centerLeft,
+              child: Text(
+                d.nome!,
+                style: TextStyle(color: Colors.deepOrange, fontSize: 22),
+              )
+          )
+      );
+
       produtosFull.forEach((p) {
+
         if(d.codigo == p.codDepto){
+
           rows.add(InkWell(
             child: Container(
               margin: EdgeInsets.all(8),
               height: size.height * 0.15,
-              width: size.width * 0.97,
+              width: Responsive.isDesktop(context) ?
+              size.width * 0.3 :
+              Responsive.isTablet(context) ?
+              size.width * 0.45 :
+              size.width,
               decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
               child: Row(
                 children: [
@@ -187,13 +206,16 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
               openDetalhes(p, context);
             },
           ));
+
         }
       });
+
       views.add(
           SingleChildScrollView(
-            child: Column(children: rows)
+            child: Wrap(children: rows)
           )
       );
+
     });
     return views;
   }
@@ -244,7 +266,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
           departamentosFuture = repositoryDepto.getDeptosFuture(codloja),
           produtosFuture = repositoryProdutos.getProdutosFuture('',codloja),
           produtosFuture = repositoryProdutos.getProdutosFuture('promocao',codloja),
-          produtosFuture = repositoryProdutos.getProdutosFuture('favoritos',codloja),
+          //produtosFuture = repositoryProdutos.getProdutosFuture('favoritos',codloja),
         ]),
         builder: (context,AsyncSnapshot<List<dynamic>>snapshot){
 
@@ -260,7 +282,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
           departamentos = snapshot.data![1]??[];
           produtosFull = snapshot.data![2]??[];
           promocoes = snapshot.data![3]??[];
-          maisPedidos = snapshot.data![4]??[];
+          //maisPedidos = snapshot.data![4]??[];
 
           _tabController = TabController(length: departamentos.length, vsync: this);
           return NestedScrollView(
@@ -287,41 +309,31 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
                                 child: AppImages().backgroundLoja(loja, context),
                               ),
                             ),
+                            // Positioned(
+                            //   child: Container(
+                            //     height: 10,
+                            //     clipBehavior: Clip.antiAlias,
+                            //     decoration: BoxDecoration(
+                            //         color: Colors.white,
+                            //         // borderRadius: BorderRadius.vertical(
+                            //         //   top: Radius.circular(15),
+                            //         // ),
+                            //         border: Border.all(
+                            //           color: Colors.white,
+                            //           width: 0,
+                            //         )),
+                            //   ),
+                            //   bottom: -1,
+                            //   left: 0,
+                            //   right: 0,
+                            // ),
                             Positioned(
                               child: Container(
-                                height: 10,
-                                clipBehavior: Clip.antiAlias,
-                                decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    // borderRadius: BorderRadius.vertical(
-                                    //   top: Radius.circular(15),
-                                    // ),
-                                    border: Border.all(
-                                      color: Colors.white,
-                                      width: 0,
-                                    )),
-                              ),
-                              bottom: -1,
-                              left: 0,
-                              right: 0,
-                            ),
-                            Positioned(
-                              child: Container(
-                                height: 150,
-                                margin: EdgeInsets.only(left: 16,right: 16),
                                 child: Row(
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   children: [
-                                    Container(
-                                      height: 105,
-                                      width: 105,
-                                      decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        borderRadius: BorderRadius.circular(100)
-                                      ),
-                                      child: AppImages().imageLogo(loja, context),
-                                    ),
+                                    AppImages().imageLogo(loja, context),
                                     // Expanded(
                                     //   flex: 7,
                                     //   child: Container(
@@ -341,8 +353,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
                                 ),
                               ),
                               //bottom: -40,
-                              top: 40,
-                              left: 0,
+                              top: 50,
+                              left: 25,
                               right: 0,
                             ),
                           ],
@@ -356,12 +368,12 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
                   ),
                   SliverToBoxAdapter(
                     child: Container(
-                      margin: EdgeInsets.all(8),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Container(
+                            margin: EdgeInsets.only(top:8,left: 8,right: 8),
                             child: Text(
                               'PROMOÇÃO',
                               style: TextStyle(
@@ -384,9 +396,14 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
                                 itemBuilder: (context, index) {
                                 return InkWell(
                                   child: Container(
-                                    margin: const EdgeInsets.only(top: 5, bottom: 5, right: 13, left: 3),
+                                    margin: const EdgeInsets.all(8),
                                     height:size.height * 0.23,
-                                    width: size.width * 0.80,
+                                    width:
+                                    Responsive.isDesktop(context) ?
+                                    size.width * 0.3 :
+                                    Responsive.isTablet(context) ?
+                                    size.width * 0.45 :
+                                    size.width * 0.85,
                                     decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
                                     child: Row(
                                       children: [
