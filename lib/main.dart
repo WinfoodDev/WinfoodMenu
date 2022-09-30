@@ -6,7 +6,7 @@ import 'package:winfood_menu/pages/initial_page.dart';
 
 
 void main() {
-  //setUrlStrategy(PathUrlStrategy());
+  setUrlStrategy(PathUrlStrategy());
   //String query = Uri.base.query;
   runApp(MyApp(
     //codloja: query,

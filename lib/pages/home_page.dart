@@ -5,7 +5,6 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:intl/intl.dart';
 import 'package:winfood_menu/repository/loja_repository.dart';
 import 'dart:math';
-
 import '../app_images.dart';
 import '../model/departamentos_model.dart';
 import '../model/loja_model.dart';
