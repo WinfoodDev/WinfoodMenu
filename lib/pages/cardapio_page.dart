@@ -38,20 +38,18 @@ class _CardapioPageState extends State<CardapioPage> with TickerProviderStateMix
   late TabController _tabController;
   String codloja = '';
   late Size size;
+  bool isReady = false;
 
   @override
   void initState(){
+
     formatter = NumberFormat.simpleCurrency(locale: "pt_Br");
     codloja = widget.codigoLoja??'';
     repositoryLoja = LojaRepository();
     repositoryDepto = DeptoRepository();
     repositoryProdutos = ProdutosRepository();
-    lojaFuture = repositoryLoja.getLojaFuture('1');
-    lojaFuture.then((value) => loja = value);
-    departamentosFuture = repositoryDepto.getDeptosFuture('1');
-    departamentosFuture.then((value) => departamentos = value );
-    produtosFuture = repositoryProdutos.getProdutosFuture('','1');
-    produtosFuture.then((value) => produtosFull = value);
+
+    buscaloja();
 
   }
 
@@ -63,13 +61,30 @@ class _CardapioPageState extends State<CardapioPage> with TickerProviderStateMix
         ));
   }
 
+  Future<void>buscaloja()async{
+    loja = await repositoryLoja.getLojaFuture('1');
+    departamentos = await repositoryDepto.getDeptosFuture('1');
+    produtosFull = await repositoryProdutos.getProdutosFuture('','1');
+    setState(() {
+      isReady =  loja.imgFundo!.isNotEmpty && departamentos.isNotEmpty && produtosFull.isNotEmpty ;
+    });
+
+  }
+
+  buscadepto(){
+    departamentosFuture = repositoryDepto.getDeptosFuture('1');
+    departamentosFuture.then((value) => departamentos = value );
+  }
+
+  buscaProdutos(){
+    produtosFuture = repositoryProdutos.getProdutosFuture('','1');
+    produtosFuture.then((value) => produtosFull = value);
+  }
+
   List<Widget>buildingTabView(){
     List<Widget>views = [];
-
     departamentos.forEach((d) {
-
       List<Widget>rows = [];
-
       rows.add(
           Container(
               margin: EdgeInsets.all(8),
@@ -217,77 +232,68 @@ class _CardapioPageState extends State<CardapioPage> with TickerProviderStateMix
   @override
   Widget build(BuildContext context) {
     size = MediaQuery.of(context).size;
-
-    return FutureBuilder(
-      future: lojaFuture,
-      builder: (context, AsyncSnapshot<Loja>snapshot) {
-        if(!snapshot.hasData){
-          return loading();
-        }
-        _tabController = TabController(length: departamentos.length, vsync: this);
-        return Scaffold(
-          appBar: PreferredSize(
-            preferredSize: const Size.fromHeight(150),
-            child: Column(
-              children: [
-                Container(
-                  height: 100,
-                  color: Colors.white,
-                  child: Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      ColorFiltered(
-                        colorFilter: ColorFilter.mode(
-                          Colors.black.withOpacity(0.2),
-                          BlendMode.srcOver,
-                        ),
-                        child: Container(
-                          child: AppImages().backgroundLoja(loja, context),
-                        ),
-                      ),
-                      Positioned(
-                        child: Container(
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              AppImages().imageLogo(loja, context),
-                            ],
-                          ),
-                        ),
-                        top: 10,
-                        left: 25,
-                        right: 0,
-                      ),
-                    ],
+    _tabController = TabController(length: departamentos.length, vsync: this);
+    return isReady ? Scaffold(
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(150),
+        child: Column(
+          children: [
+            Container(
+              height: 100,
+              color: Colors.white,
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  ColorFiltered(
+                    colorFilter: ColorFilter.mode(
+                      Colors.black.withOpacity(0.2),
+                      BlendMode.srcOver,
+                    ),
+                    child: Container(
+                      child: AppImages().backgroundLoja(loja, context),
+                    ),
                   ),
-                ),
-                Container(
-                  color: Colors.white,
-                  child: Column(
-                    children: [
-                      TabBar(
-                        controller: _tabController,
-                        labelColor: Colors.deepOrange,
-                        isScrollable: true,
-                        tabs: buildTabs(),
+                  Positioned(
+                    child: Container(
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          AppImages().imageLogo(loja, context),
+                        ],
                       ),
-                    ],
+                    ),
+                    top: 10,
+                    left: 25,
+                    right: 0,
                   ),
-                )
-              ],
+                ],
+              ),
             ),
-          ),
-          body: Container(
-            padding: EdgeInsets.all(5),
-            child: TabBarView(
-              controller: _tabController,
-              children: buildingTabView(),
+            Container(
+              color: Colors.white,
+              child: Column(
+                children: [
+                  TabBar(
+                    controller: _tabController,
+                    labelColor: Colors.deepOrange,
+                    isScrollable: true,
+                    tabs: buildTabs(),
+                  ),
+                ],
+              ),
             ),
-          ),
-        );
-      }
-    );
+          ],
+        ),
+      ),
+      body: Container(
+        padding: EdgeInsets.all(5),
+        child: TabBarView(
+          controller: _tabController,
+          children: buildingTabView(),
+        ),
+      ),
+    ) : loading();
   }
   List<Widget>buildTabs(){
     List<Widget>tabs = [];
