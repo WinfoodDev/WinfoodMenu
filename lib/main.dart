@@ -7,9 +7,9 @@ import 'package:winfood_menu/pages/initial_page.dart';
 
 void main() {
   setUrlStrategy(PathUrlStrategy());
-  //String query = Uri.base.query;
+  String query = Uri.base.query;
   runApp(MyApp(
-    //codloja: query,
+    codloja: query,
   ));
 }
 
@@ -26,8 +26,8 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.deepOrange,
       ),
       routes: {
-        '/':(_)=>HomePage(codloja: '1',),
-        '/home':(_)=>HomePage(codloja: '1',)
+        '/':(_)=>HomePage(codloja: codloja,),
+        '/home':(_)=>HomePage(codloja: codloja,)
       },
     );
   }

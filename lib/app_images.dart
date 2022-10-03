@@ -185,8 +185,8 @@ class AppImages {
     return ClipRRect(
       borderRadius: BorderRadius.circular(90.0),
       child: CachedNetworkImage(
-        height: 130,
-        width: 130,
+        height: 80,
+        width: 80,
         imageUrl: GlobalBaseURLNuvem.baseURLNuvem + loja.imgLogo.toString(),
         fit: BoxFit.cover,
         placeholder: (context, url) => Image.asset(

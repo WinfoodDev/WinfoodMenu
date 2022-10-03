@@ -31,7 +31,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
   
   late Future<Loja> lojaFuture;
   late Future<List<DepartamentosModel>> departamentosFuture;
-  late Future<List<ProdutosModel>> maisPedidosFuture;
   late Future<List<ProdutosModel>> promocaoFuture;
   late Future<List<ProdutosModel>> produtosFuture;
 
@@ -94,7 +93,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
           rows.add(InkWell(
             child: Container(
               margin: EdgeInsets.all(8),
-              height: size.height * 0.15,
+              height: size.height * 0.18,
               width: Responsive.isDesktop(context) ?
               size.width * 0.3 :
               Responsive.isTablet(context) ?
@@ -259,16 +258,12 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
   Widget build(BuildContext context) {
     size = MediaQuery.of(context).size;
     return Scaffold(
-      body: codloja.isNotEmpty
-          ? FutureBuilder(
-        future: Future.wait([
+      body: codloja.isNotEmpty ? FutureBuilder(future: Future.wait([
           lojaFuture = repositoryLoja.getLojaFuture(codloja),
           departamentosFuture = repositoryDepto.getDeptosFuture(codloja),
           produtosFuture = repositoryProdutos.getProdutosFuture('',codloja),
           produtosFuture = repositoryProdutos.getProdutosFuture('promocao',codloja),
-          //produtosFuture = repositoryProdutos.getProdutosFuture('favoritos',codloja),
-        ]),
-        builder: (context,AsyncSnapshot<List<dynamic>>snapshot){
+        ]), builder: (context,AsyncSnapshot<List<dynamic>>snapshot){
 
           if(!snapshot.hasData){
             return Center(
@@ -282,270 +277,17 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
           departamentos = snapshot.data![1]??[];
           produtosFull = snapshot.data![2]??[];
           promocoes = snapshot.data![3]??[];
-          //maisPedidos = snapshot.data![4]??[];
 
           _tabController = TabController(length: departamentos.length, vsync: this);
           return NestedScrollView(
               headerSliverBuilder: (context, innerBoxIsScrolled) {
                 return <Widget>[
-                  SliverAppBar(
-                    expandedHeight: 200,
-                    stretch: true,
-                    pinned: true,
-                    floating: true,
-                    flexibleSpace: FlexibleSpaceBar(
-                      collapseMode: CollapseMode.pin,
-                      background: Container(
-                        color: Colors.white,
-                        child: Stack(
-                          fit: StackFit.expand,
-                          children: [
-                            ColorFiltered(
-                              colorFilter: ColorFilter.mode(
-                                Colors.black.withOpacity(0.2),
-                                BlendMode.srcOver,
-                              ),
-                              child: Container(
-                                child: AppImages().backgroundLoja(loja, context),
-                              ),
-                            ),
-                            // Positioned(
-                            //   child: Container(
-                            //     height: 10,
-                            //     clipBehavior: Clip.antiAlias,
-                            //     decoration: BoxDecoration(
-                            //         color: Colors.white,
-                            //         // borderRadius: BorderRadius.vertical(
-                            //         //   top: Radius.circular(15),
-                            //         // ),
-                            //         border: Border.all(
-                            //           color: Colors.white,
-                            //           width: 0,
-                            //         )),
-                            //   ),
-                            //   bottom: -1,
-                            //   left: 0,
-                            //   right: 0,
-                            // ),
-                            Positioned(
-                              child: Container(
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    AppImages().imageLogo(loja, context),
-                                    // Expanded(
-                                    //   flex: 7,
-                                    //   child: Container(
-                                    //     height: double.maxFinite,
-                                    //     margin: EdgeInsets.only(left: 5),
-                                    //     child: Column(
-                                    //       crossAxisAlignment: CrossAxisAlignment.start,
-                                    //       children: [
-                                    //         Text('loja.nome',style: TextStyle(color: Colors.black54,fontSize: 16,overflow: TextOverflow.ellipsis),),
-                                    //         Text('loja.ender',style: TextStyle(color: Colors.black45,overflow: TextOverflow.ellipsis),maxLines: 2,),
-                                    //         Text('',style: TextStyle(color: Colors.black45,fontSize: 12)),
-                                    //       ],
-                                    //     ),
-                                    //   ),
-                                    // ),
-                                  ],
-                                ),
-                              ),
-                              //bottom: -40,
-                              top: 50,
-                              left: 25,
-                              right: 0,
-                            ),
-                          ],
-                        ),
-                      ),
-                      stretchModes: [
-                        StretchMode.zoomBackground,
-                        StretchMode.fadeTitle,
-                      ],
-                    ),
-                  ),
-                  SliverToBoxAdapter(
-                    child: Container(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            margin: EdgeInsets.only(top:8,left: 8,right: 8),
-                            child: Text(
-                              'PROMOÇÃO',
-                              style: TextStyle(
-                                  color: Colors.deepOrange,
-                                  fontSize: 22),
-                            ),
-                          ),
-                          Container(
-                            height: size.height * 0.17,
-                            child: ScrollConfiguration(
-                              behavior: ScrollConfiguration.of(context)
-                                  .copyWith(
-                                  dragDevices: {
-                                    PointerDeviceKind.touch,
-                                    PointerDeviceKind.mouse
-                                  }),
-                              child: ListView.builder(
-                                scrollDirection: Axis.horizontal,
-                                itemCount:promocoes.length,
-                                itemBuilder: (context, index) {
-                                return InkWell(
-                                  child: Container(
-                                    margin: const EdgeInsets.all(8),
-                                    height:size.height * 0.23,
-                                    width:
-                                    Responsive.isDesktop(context) ?
-                                    size.width * 0.3 :
-                                    Responsive.isTablet(context) ?
-                                    size.width * 0.45 :
-                                    size.width * 0.85,
-                                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
-                                    child: Row(
-                                      children: [
-                                        Expanded(
-                                          flex: 1,
-                                          child: Container(
-                                            decoration: BoxDecoration(
-                                                borderRadius: const BorderRadius.only(
-                                                    topLeft: Radius.circular(10),
-                                                    bottomLeft: Radius.circular(10)),
-                                                boxShadow: [
-                                                  BoxShadow(
-                                                    color: Colors.grey.withOpacity(0.5),
-                                                    spreadRadius: 2,
-                                                    blurRadius: 4,
-                                                    offset:
-                                                    const Offset(1, 2), // changes position of shadow
-                                                  ),
-                                                ]),
-                                            child: ClipRRect(
-                                              borderRadius: const BorderRadius.only(
-                                                  bottomLeft: Radius.circular(10),
-                                                  topLeft: Radius.circular(10)),
-                                              child: AppImages().newImageProduct(promocoes[index], context),
-                                            ),
-                                          ),
-                                        ),
-                                        Expanded(
-                                          flex: 1,
-                                          child: Container(
-                                            decoration: BoxDecoration(
-                                                color: Colors.white,
-                                                borderRadius: const BorderRadius.only(
-                                                    topRight: Radius.circular(10),
-                                                    bottomRight: Radius.circular(10)),
-                                                boxShadow: [
-                                                  BoxShadow(
-                                                    color: Colors.grey.withOpacity(0.5),
-                                                    spreadRadius: 2,
-                                                    blurRadius: 4,
-                                                    offset:
-                                                    const Offset(1, 2), // changes position of shadow
-                                                  ),
-                                                ]),
-                                            child: Padding(
-                                              padding: const EdgeInsets.all(7.0),
-                                              child: Column(
-                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                mainAxisSize: MainAxisSize.min,
-                                                children: [
-                                                  Expanded(
-                                                    flex: 1,
-                                                    child: Text(promocoes[index].nome!.toUpperCase(),
-                                                        maxLines: 2,
-                                                        overflow: TextOverflow.ellipsis,
-                                                        style: const TextStyle(
-                                                            fontSize: 14, color: Colors.black54,fontWeight: FontWeight.w600)),
-                                                  ),
-                                                  Expanded(
-                                                    flex: 2,
-                                                    child: Text(promocoes[index].descricao!,
-                                                        maxLines: 3,
-                                                        overflow: TextOverflow.ellipsis,
-                                                        style: TextStyle(fontSize: 12, color: Colors.black54,fontWeight: FontWeight.w600)),),
-                                                  Row(
-                                                    children: [
-                                                      Container(
-                                                        margin: EdgeInsets.only(right: 10),
-                                                        child: Text(
-                                                            formatter.format(promocoes[index].precoVenda),
-                                                            maxLines: 1,
-                                                            overflow: TextOverflow.ellipsis,
-                                                            style: TextStyle(
-                                                                fontSize: 14,
-                                                                color: Colors.black38,
-                                                                decorationThickness: 4,
-                                                                decorationColor: Colors.red,
-                                                                decorationStyle:
-                                                                TextDecorationStyle.solid,
-                                                                decoration:
-                                                                TextDecoration.lineThrough,fontWeight: FontWeight.w600)),
-                                                      ),
-                                                      Container(
-                                                        child: Text(
-                                                            formatter.format(promocoes[index].precoPromocao),
-                                                            maxLines: 1,
-                                                            overflow: TextOverflow.ellipsis,
-                                                            style: TextStyle(
-                                                                fontSize: 14,
-                                                                color: Colors.deepOrange)),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ],
-                                              ),
-                                            )
-                                            ,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  onTap: () {
-                                    openDetalhes(promocoes[index], context);
-                                  },
-                                );
-                              },),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  SliverPersistentHeader(
-                      pinned: true,
-                      delegate: _SliverAppBarDelegate(
-                          child: Container(
-                            color: Colors.white,
-                            child: Column(
-                              children: [
-                                TabBar(
-                                  controller: _tabController,
-                                  labelColor: Colors.deepOrange,
-                                  isScrollable: true,
-                                  tabs: buildTabs(),
-                                ),
-                              ],
-                            ),
-                          ),
-                          maxHeight: 50,
-                          minHeight: 50
-                      )
-                  ),
+                  buildHeader(),
+                  buildPromocao(),
+                  buildTabBar(),
                 ];
               },
-              body: Container(
-                padding: EdgeInsets.all(5),
-                child: TabBarView(
-                  controller: _tabController,
-                  children: buildingTabView(),
-                ),
-              )
+              body: buildBody()
           );
 
         },
@@ -553,6 +295,231 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
           : Container(child: Center(child: Text('Error Codloja não encontrado!'),)),
     );
   }
+
+  buildHeader(){
+    return SliverToBoxAdapter(
+      child: Container(
+        height: 100,
+        color: Colors.white,
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            ColorFiltered(
+              colorFilter: ColorFilter.mode(
+                Colors.black.withOpacity(0.2),
+                BlendMode.srcOver,
+              ),
+              child: Container(
+                child: AppImages().backgroundLoja(loja, context),
+              ),
+            ),
+            Positioned(
+              child: Container(
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    AppImages().imageLogo(loja, context),
+                  ],
+                ),
+              ),
+              top: 10,
+              left: 25,
+              right: 0,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  buildPromocao() {
+    return SliverToBoxAdapter(
+      child: promocoes.isNotEmpty ? Container(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              margin: EdgeInsets.only(top:8,left: 8,right: 8),
+              child: Text(
+                'PROMOÇÃO',
+                style: TextStyle(
+                    color: Colors.deepOrange,
+                    fontSize: 22),
+              ),
+            ),
+            Container(
+              height: size.height * 0.17,
+              child: ScrollConfiguration(
+                behavior: ScrollConfiguration.of(context)
+                    .copyWith(
+                    dragDevices: {
+                      PointerDeviceKind.touch,
+                      PointerDeviceKind.mouse
+                    }),
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount:promocoes.length,
+                  itemBuilder: (context, index) {
+                    return InkWell(
+                      child: Container(
+                        margin: const EdgeInsets.all(8),
+                        height:size.height * 0.23,
+                        width:
+                        Responsive.isDesktop(context) ?
+                        size.width * 0.3 :
+                        Responsive.isTablet(context) ?
+                        size.width * 0.45 :
+                        size.width * 0.85,
+                        decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              flex: 1,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                    borderRadius: const BorderRadius.only(
+                                        topLeft: Radius.circular(10),
+                                        bottomLeft: Radius.circular(10)),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.grey.withOpacity(0.5),
+                                        spreadRadius: 2,
+                                        blurRadius: 4,
+                                        offset:
+                                        const Offset(1, 2), // changes position of shadow
+                                      ),
+                                    ]),
+                                child: ClipRRect(
+                                  borderRadius: const BorderRadius.only(
+                                      bottomLeft: Radius.circular(10),
+                                      topLeft: Radius.circular(10)),
+                                  child: AppImages().newImageProduct(promocoes[index], context),
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              flex: 1,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: const BorderRadius.only(
+                                        topRight: Radius.circular(10),
+                                        bottomRight: Radius.circular(10)),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.grey.withOpacity(0.5),
+                                        spreadRadius: 2,
+                                        blurRadius: 4,
+                                        offset:
+                                        const Offset(1, 2), // changes position of shadow
+                                      ),
+                                    ]),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(7.0),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Expanded(
+                                        flex: 1,
+                                        child: Text(promocoes[index].nome!.toUpperCase(),
+                                            maxLines: 2,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: const TextStyle(
+                                                fontSize: 14, color: Colors.black54,fontWeight: FontWeight.w600)),
+                                      ),
+                                      Expanded(
+                                        flex: 2,
+                                        child: Text(promocoes[index].descricao!,
+                                            maxLines: 3,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: TextStyle(fontSize: 12, color: Colors.black54,fontWeight: FontWeight.w600)),),
+                                      Row(
+                                        children: [
+                                          Container(
+                                            margin: EdgeInsets.only(right: 10),
+                                            child: Text(
+                                                formatter.format(promocoes[index].precoVenda),
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                                style: TextStyle(
+                                                    fontSize: 14,
+                                                    color: Colors.black38,
+                                                    decorationThickness: 4,
+                                                    decorationColor: Colors.red,
+                                                    decorationStyle:
+                                                    TextDecorationStyle.solid,
+                                                    decoration:
+                                                    TextDecoration.lineThrough,fontWeight: FontWeight.w600)),
+                                          ),
+                                          Container(
+                                            child: Text(
+                                                formatter.format(promocoes[index].precoPromocao),
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                                style: TextStyle(
+                                                    fontSize: 14,
+                                                    color: Colors.deepOrange)),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                )
+                                ,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      onTap: () {
+                        openDetalhes(promocoes[index], context);
+                      },
+                    );
+                  },),
+              ),
+            ),
+          ],
+        ),
+      ) : Container(),
+    );
+  }
+
+  buildTabBar() {
+    return SliverPersistentHeader(
+        pinned: true,
+        delegate: _SliverAppBarDelegate(
+            child: Container(
+              color: Colors.white,
+              child: Column(
+                children: [
+                  TabBar(
+                    controller: _tabController,
+                    labelColor: Colors.deepOrange,
+                    isScrollable: true,
+                    tabs: buildTabs(),
+                  ),
+                ],
+              ),
+            ),
+            maxHeight: 50,
+            minHeight: 50
+        )
+    );
+  }
+
+  buildBody() {
+    return Container(
+      padding: EdgeInsets.all(5),
+      child: TabBarView(
+        controller: _tabController,
+        children: buildingTabView(),
+      ),
+    );
+  }
+
 }
 
 class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate{
