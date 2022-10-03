@@ -57,6 +57,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
     repositoryLoja = LojaRepository();
     repositoryDepto = DeptoRepository();
     repositoryProdutos = ProdutosRepository();
+
     lojaFuture = repositoryLoja.getLojaFuture(codloja);
     lojaFuture.then((value) => loja = value);
 
@@ -263,10 +264,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
     return Scaffold(
       body: codloja.isNotEmpty ? FutureBuilder(future: Future.wait([
 
-          //lojaFuture = repositoryLoja.getLojaFuture(codloja),
           departamentosFuture = repositoryDepto.getDeptosFuture(codloja),
           produtosFuture = repositoryProdutos.getProdutosFuture('',codloja),
           produtosFuture = repositoryProdutos.getProdutosFuture('promocao',codloja),
+
         ]), builder: (context,AsyncSnapshot<List<dynamic>>snapshot){
 
           if(!snapshot.hasData){
@@ -277,12 +278,12 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
                 ));
           }
 
-          //loja = snapshot.data![0]??Loja();
           departamentos = snapshot.data![0]??[];
           produtosFull = snapshot.data![1]??[];
           promocoes = snapshot.data![2]??[];
 
           _tabController = TabController(length: departamentos.length, vsync: this);
+
           return NestedScrollView(
               headerSliverBuilder: (context, innerBoxIsScrolled) {
                 return <Widget>[
@@ -305,29 +306,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
           color: Colors.deepOrange.shade400,
           size: 30.0,
         ));
-  }
-
-  getFutures()async{
-    loja = await repositoryLoja.getLojaFuture(codloja);
-    departamentos = await repositoryDepto.getDeptosFuture(codloja);
-    produtosFull = await repositoryProdutos.getProdutosFuture('',codloja);
-    promocoes = await repositoryProdutos.getProdutosFuture('promocao',codloja);
-    if(produtosFull.isNotEmpty){
-      _tabController = TabController(length: departamentos.length, vsync: this);
-    }
-  }
-
-  buildPage(){
-    return NestedScrollView(
-        headerSliverBuilder: (context, innerBoxIsScrolled) {
-          return <Widget>[
-            buildHeader(),
-            buildPromocao(),
-            buildTabBar(),
-          ];
-        },
-        body: buildBody()
-    );
   }
 
   buildHeader(){
@@ -363,14 +341,14 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
             ),
           ],
         ),
-      ),
+      )
     );
   }
 
   buildPromocao() {
     return SliverToBoxAdapter(
       child: promocoes.isNotEmpty ? Container(
-        child: Column(
+        child:Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

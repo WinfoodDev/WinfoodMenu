@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
+import 'package:winfood_menu/pages/cardapio_page.dart';
 import 'package:winfood_menu/pages/home_page.dart';
 import 'package:winfood_menu/pages/initial_page.dart';
 
@@ -26,8 +27,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.deepOrange,
       ),
       routes: {
-        '/':(_)=>HomePage(codloja: codloja,),
-        '/home':(_)=>HomePage(codloja: codloja,)
+        '/':(_)=>CardapioPage(codigoLoja: codloja,),
       },
     );
   }
