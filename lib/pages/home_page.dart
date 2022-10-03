@@ -57,6 +57,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
     repositoryLoja = LojaRepository();
     repositoryDepto = DeptoRepository();
     repositoryProdutos = ProdutosRepository();
+    lojaFuture = repositoryLoja.getLojaFuture(codloja);
+    lojaFuture.then((value) => loja = value);
+
     super.initState();
   }
 
@@ -259,7 +262,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
     size = MediaQuery.of(context).size;
     return Scaffold(
       body: codloja.isNotEmpty ? FutureBuilder(future: Future.wait([
-          lojaFuture = repositoryLoja.getLojaFuture(codloja),
+
+          //lojaFuture = repositoryLoja.getLojaFuture(codloja),
           departamentosFuture = repositoryDepto.getDeptosFuture(codloja),
           produtosFuture = repositoryProdutos.getProdutosFuture('',codloja),
           produtosFuture = repositoryProdutos.getProdutosFuture('promocao',codloja),
@@ -272,11 +276,11 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
                   size: 30.0,
                 ));
           }
-  
-          loja = snapshot.data![0]??Loja();
-          departamentos = snapshot.data![1]??[];
-          produtosFull = snapshot.data![2]??[];
-          promocoes = snapshot.data![3]??[];
+
+          //loja = snapshot.data![0]??Loja();
+          departamentos = snapshot.data![0]??[];
+          produtosFull = snapshot.data![1]??[];
+          promocoes = snapshot.data![2]??[];
 
           _tabController = TabController(length: departamentos.length, vsync: this);
           return NestedScrollView(
@@ -289,10 +293,40 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
               },
               body: buildBody()
           );
-
         },
       )
           : Container(child: Center(child: Text('Error Codloja não encontrado!'),)),
+    );
+  }
+
+  loading(){
+    return Center(
+        child: SpinKitThreeBounce(
+          color: Colors.deepOrange.shade400,
+          size: 30.0,
+        ));
+  }
+
+  getFutures()async{
+    loja = await repositoryLoja.getLojaFuture(codloja);
+    departamentos = await repositoryDepto.getDeptosFuture(codloja);
+    produtosFull = await repositoryProdutos.getProdutosFuture('',codloja);
+    promocoes = await repositoryProdutos.getProdutosFuture('promocao',codloja);
+    if(produtosFull.isNotEmpty){
+      _tabController = TabController(length: departamentos.length, vsync: this);
+    }
+  }
+
+  buildPage(){
+    return NestedScrollView(
+        headerSliverBuilder: (context, innerBoxIsScrolled) {
+          return <Widget>[
+            buildHeader(),
+            buildPromocao(),
+            buildTabBar(),
+          ];
+        },
+        body: buildBody()
     );
   }
 
