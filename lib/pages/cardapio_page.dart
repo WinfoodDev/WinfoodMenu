@@ -278,13 +278,13 @@ class _CardapioPageState extends State<CardapioPage> with TickerProviderStateMix
               ],
             ),
           ),
-          body: produtosFull.isNotEmpty ? Container(
+          body: Container(
             padding: EdgeInsets.all(5),
             child: TabBarView(
               controller: _tabController,
               children: buildingTabView(),
             ),
-          ) : loading(),
+          ),
         );
       }
     );
