@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.deepOrange,
       ),
       routes: {
-        '/':(_)=>CardapioPage(codigoLoja: '1',),
+        '/':(_)=>HomePage(codloja: codloja,),
       },
     );
   }

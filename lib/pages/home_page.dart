@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:intl/intl.dart';
 import 'package:winfood_menu/repository/loja_repository.dart';
@@ -49,6 +50,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
 
   late Size size;
 
+  bool isReady = false;
+
   @override
   void initState() {
     // TODO: implement initState
@@ -57,10 +60,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
     repositoryLoja = LojaRepository();
     repositoryDepto = DeptoRepository();
     repositoryProdutos = ProdutosRepository();
-
-    lojaFuture = repositoryLoja.getLojaFuture(codloja);
-    lojaFuture.then((value) => loja = value);
-
+    buscaloja(codloja);
     super.initState();
   }
 
@@ -258,33 +258,66 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
     );
   }
 
+  Future<void>buscaloja(String codloja)async{
+    loja = await repositoryLoja.getLojaFuture(codloja);
+    departamentos = await repositoryDepto.getDeptosFuture(codloja);
+    promocoes = await repositoryProdutos.getProdutosFuture('promocao',codloja);
+    produtosFull = await repositoryProdutos.getProdutosFuture('',codloja);
+    setState(() {
+      isReady =  loja.imgFundo!.isNotEmpty && departamentos.isNotEmpty && produtosFull.isNotEmpty ;
+    });
+
+  }
+
   @override
   Widget build(BuildContext context) {
     size = MediaQuery.of(context).size;
-    return Scaffold(
-      body: codloja.isNotEmpty ? FutureBuilder(future: Future.wait([
+    _tabController = TabController(length: departamentos.length, vsync: this);
 
-          departamentosFuture = repositoryDepto.getDeptosFuture(codloja),
-          produtosFuture = repositoryProdutos.getProdutosFuture('',codloja),
-          produtosFuture = repositoryProdutos.getProdutosFuture('promocao',codloja),
-
-        ]), builder: (context,AsyncSnapshot<List<dynamic>>snapshot){
-
-          if(!snapshot.hasData){
-            return Center(
-                child: SpinKitThreeBounce(
-                  color: Colors.deepOrange.shade400,
-                  size: 30.0,
-                ));
-          }
-
-          departamentos = snapshot.data![0]??[];
-          produtosFull = snapshot.data![1]??[];
-          promocoes = snapshot.data![2]??[];
-
-          _tabController = TabController(length: departamentos.length, vsync: this);
-
-          return NestedScrollView(
+    if(codloja.isEmpty){
+      return Scaffold(
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                margin: EdgeInsets.all(10),
+                padding: EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(60),
+                  border: Border.all(color: Colors.grey,width: 3)
+                ),
+                child: Icon(Icons.store_mall_directory_rounded,color: Colors.grey,size: 60,),
+              ),
+              Container(
+                child: const Text(
+                    'Loja não encontrada',
+                    style: TextStyle(
+                        color: Colors.grey,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600
+                    )
+                )
+              ),
+              Container(
+                margin: EdgeInsets.all(10),
+                child: const Text(
+                    '404 not found',
+                    style: TextStyle(
+                        color: Colors.grey,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600
+                    )
+                )
+              ),
+            ],
+          ),
+        ),
+      );
+    }else{
+      if(isReady ){
+        return Scaffold(
+          body: NestedScrollView(
               headerSliverBuilder: (context, innerBoxIsScrolled) {
                 return <Widget>[
                   buildHeader(),
@@ -293,11 +326,12 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
                 ];
               },
               body: buildBody()
-          );
-        },
-      )
-          : Container(child: Center(child: Text('Error Codloja não encontrado!'),)),
-    );
+          ),
+        );
+      }else{
+        return loading();
+      }
+    }
   }
 
   loading(){
@@ -316,14 +350,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
         child: Stack(
           fit: StackFit.expand,
           children: [
-            ColorFiltered(
-              colorFilter: ColorFilter.mode(
-                Colors.black.withOpacity(0.2),
-                BlendMode.srcOver,
-              ),
-              child: Container(
-                child: AppImages().backgroundLoja(loja, context),
-              ),
+            Container(
+              child: AppImages().backgroundLoja(loja, context),
             ),
             Positioned(
               child: Container(

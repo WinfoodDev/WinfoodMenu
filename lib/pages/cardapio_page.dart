@@ -63,6 +63,7 @@ class _CardapioPageState extends State<CardapioPage> with TickerProviderStateMix
   Future<void>buscaloja()async{
     loja = await repositoryLoja.getLojaFuture('1');
     departamentos = await repositoryDepto.getDeptosFuture('1');
+    promocoes = await repositoryProdutos.getProdutosFuture('promocao','1');
     produtosFull = await repositoryProdutos.getProdutosFuture('','1');
     setState(() {
       isReady =  loja.imgFundo!.isNotEmpty && departamentos.isNotEmpty && produtosFull.isNotEmpty ;
