@@ -405,7 +405,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
                     return InkWell(
                       child: Container(
                         margin: const EdgeInsets.all(8),
-                        height:size.height * 0.23,
+                        height:size.height * 0.25,
                         width:
                         Responsive.isDesktop(context) ?
                         size.width * 0.3 :
