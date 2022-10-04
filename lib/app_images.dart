@@ -213,7 +213,7 @@ class AppImages {
         fit: BoxFit.cover,
         width: 60,
         placeholder: (context, url) => Image.asset(
-          'images/bg_orange_4.png',
+          'images/loading4.gif',
           fit: BoxFit.cover,
         ),
         errorWidget: (context, error, stackTrace) => Image.asset(

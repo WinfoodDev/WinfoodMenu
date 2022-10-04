@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -42,15 +44,12 @@ class _CardapioPageState extends State<CardapioPage> with TickerProviderStateMix
 
   @override
   void initState(){
-
     formatter = NumberFormat.simpleCurrency(locale: "pt_Br");
     codloja = widget.codigoLoja??'';
     repositoryLoja = LojaRepository();
     repositoryDepto = DeptoRepository();
     repositoryProdutos = ProdutosRepository();
-
     buscaloja();
-
   }
 
   loading(){
@@ -244,14 +243,8 @@ class _CardapioPageState extends State<CardapioPage> with TickerProviderStateMix
               child: Stack(
                 fit: StackFit.expand,
                 children: [
-                  ColorFiltered(
-                    colorFilter: ColorFilter.mode(
-                      Colors.black.withOpacity(0.2),
-                      BlendMode.srcOver,
-                    ),
-                    child: Container(
-                      child: AppImages().backgroundLoja(loja, context),
-                    ),
+                  Container(
+                    child: AppImages().backgroundLoja(loja, context),
                   ),
                   Positioned(
                     child: Container(
@@ -270,6 +263,157 @@ class _CardapioPageState extends State<CardapioPage> with TickerProviderStateMix
                 ],
               ),
             ),
+            promocoes.isNotEmpty
+                ? Container(
+              child:Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    margin: EdgeInsets.only(top:8,left: 8,right: 8),
+                    child: Text(
+                      'PROMOÇÃO',
+                      style: TextStyle(
+                          color: Colors.deepOrange,
+                          fontSize: 22),
+                    ),
+                  ),
+                  Container(
+                    height: size.height * 0.17,
+                    child: ScrollConfiguration(
+                      behavior: ScrollConfiguration.of(context)
+                          .copyWith(
+                          dragDevices: {
+                            PointerDeviceKind.touch,
+                            PointerDeviceKind.mouse
+                          }),
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount:promocoes.length,
+                        itemBuilder: (context, index) {
+                          return InkWell(
+                            child: Container(
+                              margin: const EdgeInsets.all(8),
+                              height:size.height * 0.23,
+                              width:
+                              Responsive.isDesktop(context) ?
+                              size.width * 0.3 :
+                              Responsive.isTablet(context) ?
+                              size.width * 0.45 :
+                              size.width * 0.85,
+                              decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    flex: 1,
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                          borderRadius: const BorderRadius.only(
+                                              topLeft: Radius.circular(10),
+                                              bottomLeft: Radius.circular(10)),
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: Colors.grey.withOpacity(0.5),
+                                              spreadRadius: 2,
+                                              blurRadius: 4,
+                                              offset:
+                                              const Offset(1, 2), // changes position of shadow
+                                            ),
+                                          ]),
+                                      child: ClipRRect(
+                                        borderRadius: const BorderRadius.only(
+                                            bottomLeft: Radius.circular(10),
+                                            topLeft: Radius.circular(10)),
+                                        child: AppImages().newImageProduct(promocoes[index], context),
+                                      ),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    flex: 1,
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius: const BorderRadius.only(
+                                              topRight: Radius.circular(10),
+                                              bottomRight: Radius.circular(10)),
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: Colors.grey.withOpacity(0.5),
+                                              spreadRadius: 2,
+                                              blurRadius: 4,
+                                              offset:
+                                              const Offset(1, 2), // changes position of shadow
+                                            ),
+                                          ]),
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(7.0),
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Expanded(
+                                              flex: 1,
+                                              child: Text(promocoes[index].nome!.toUpperCase(),
+                                                  maxLines: 2,
+                                                  overflow: TextOverflow.ellipsis,
+                                                  style: const TextStyle(
+                                                      fontSize: 14, color: Colors.black54,fontWeight: FontWeight.w600)),
+                                            ),
+                                            Expanded(
+                                              flex: 2,
+                                              child: Text(promocoes[index].descricao!,
+                                                  maxLines: 3,
+                                                  overflow: TextOverflow.ellipsis,
+                                                  style: TextStyle(fontSize: 12, color: Colors.black54,fontWeight: FontWeight.w600)),),
+                                            Row(
+                                              children: [
+                                                Container(
+                                                  margin: EdgeInsets.only(right: 10),
+                                                  child: Text(
+                                                      formatter.format(promocoes[index].precoVenda),
+                                                      maxLines: 1,
+                                                      overflow: TextOverflow.ellipsis,
+                                                      style: TextStyle(
+                                                          fontSize: 14,
+                                                          color: Colors.black38,
+                                                          decorationThickness: 4,
+                                                          decorationColor: Colors.red,
+                                                          decorationStyle:
+                                                          TextDecorationStyle.solid,
+                                                          decoration:
+                                                          TextDecoration.lineThrough,fontWeight: FontWeight.w600)),
+                                                ),
+                                                Container(
+                                                  child: Text(
+                                                      formatter.format(promocoes[index].precoPromocao),
+                                                      maxLines: 1,
+                                                      overflow: TextOverflow.ellipsis,
+                                                      style: TextStyle(
+                                                          fontSize: 14,
+                                                          color: Colors.deepOrange)),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      )
+                                      ,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            onTap: () {
+                              openDetalhes(promocoes[index], context);
+                            },
+                          );
+                        },),
+                    ),
+                  ),
+                ],
+              ),
+            )
+                : Container(),
             Container(
               color: Colors.white,
               child: Column(
@@ -295,6 +439,7 @@ class _CardapioPageState extends State<CardapioPage> with TickerProviderStateMix
       ),
     ) : loading();
   }
+
   List<Widget>buildTabs(){
     List<Widget>tabs = [];
     departamentos.forEach((c) {
