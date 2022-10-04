@@ -390,7 +390,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
               ),
             ),
             Container(
-              height: size.height * 0.17,
+              height: size.height * 0.19,
               child: ScrollConfiguration(
                 behavior: ScrollConfiguration.of(context)
                     .copyWith(
