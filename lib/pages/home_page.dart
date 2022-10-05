@@ -51,6 +51,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
   late Size size;
 
   bool isReady = false;
+  bool hasData = true;
 
   @override
   void initState() {
@@ -259,12 +260,15 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
   }
 
   Future<void>buscaloja(String codloja)async{
+
     loja = await repositoryLoja.getLojaFuture(codloja);
     departamentos = await repositoryDepto.getDeptosFuture(codloja);
     promocoes = await repositoryProdutos.getProdutosFuture('promocao',codloja);
     produtosFull = await repositoryProdutos.getProdutosFuture('',codloja);
+
     setState(() {
-      isReady =  loja.imgFundo!.isNotEmpty && departamentos.isNotEmpty && produtosFull.isNotEmpty ;
+      isReady = loja.nome!.isNotEmpty;
+      hasData = produtosFull.isNotEmpty;
     });
 
   }
@@ -344,7 +348,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
 
   buildHeader(){
     return SliverToBoxAdapter(
-      child: Container(
+      child: loja.nome!.isNotEmpty ? Container(
         height: 100,
         color: Colors.white,
         child: Stack(
@@ -369,7 +373,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
             ),
           ],
         ),
-      )
+      ) : Container()
     );
   }
 
@@ -531,7 +535,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
     return SliverPersistentHeader(
         pinned: true,
         delegate: _SliverAppBarDelegate(
-            child: Container(
+            child: departamentos.isNotEmpty ? Container(
               color: Colors.white,
               child: Column(
                 children: [
@@ -543,7 +547,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
                   ),
                 ],
               ),
-            ),
+            ) : Container(),
             maxHeight: 50,
             minHeight: 50
         )
@@ -551,11 +555,49 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
   }
 
   buildBody() {
-    return Container(
+    return hasData ? Container(
       padding: EdgeInsets.all(5),
       child: TabBarView(
         controller: _tabController,
         children: buildingTabView(),
+      ),
+    ) : Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            height: 90,
+            width: 90,
+            margin: EdgeInsets.all(10),
+            padding: EdgeInsets.all(10),
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(60),
+                border: Border.all(color: Colors.grey,width: 3)
+            ),
+            child: Icon(Icons.fastfood,color: Colors.grey,size: 50,),
+          ),
+          Container(
+              child: const Text(
+                  'Cardapio não encontrado',
+                  style: TextStyle(
+                      color: Colors.grey,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600
+                  )
+              )
+          ),
+          Container(
+              margin: EdgeInsets.all(10),
+              child: const Text(
+                  '404 not found',
+                  style: TextStyle(
+                      color: Colors.grey,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600
+                  )
+              )
+          ),
+        ],
       ),
     );
   }
