@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
-import 'package:winfood_menu/pages/cardapio_page.dart';
+
 import 'package:winfood_menu/pages/home_page.dart';
 import 'package:winfood_menu/pages/initial_page.dart';
 

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -22,7 +24,7 @@ class HomePage extends StatefulWidget {
   _HomePageState createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
+class _HomePageState extends State<HomePage> with TickerProviderStateMixin implements HandlerErrorLoja, HandlerErrorDepto{
 
   late NumberFormat formatter;
   late LojaRepository repositoryLoja;
@@ -50,8 +52,17 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
 
   late Size size;
 
-  bool isReady = false;
-  bool hasData = true;
+  bool isReadyLoja = false;
+  bool hasData = false;
+  bool isNotFoundLoja = true;
+
+  int _lojaErrorCode = 0;
+  String _lojaErrorMessage ='';
+
+  int _deptoErrorCode =0;
+  String _deptoErrorMessage='';
+
+  bool isReadyDepto = false;
 
   @override
   void initState() {
@@ -61,7 +72,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
     repositoryLoja = LojaRepository();
     repositoryDepto = DeptoRepository();
     repositoryProdutos = ProdutosRepository();
-    buscaloja(codloja);
+    buscaEmpresa();
+    //buscaDeptosProdutos(codloja);
     super.initState();
   }
 
@@ -258,23 +270,41 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
       ),
     );
   }
+  
+  buscaEmpresa(){
+    setState(() {
+      lojaFuture = repositoryLoja.getLojaFuture(codloja,this);
+    });
 
-  Future<void>buscaloja(String codloja)async{
 
-    loja = await repositoryLoja.getLojaFuture(codloja);
-    departamentos = await repositoryDepto.getDeptosFuture(codloja);
+    lojaFuture.then((value) {
+
+      setState(() {
+        loja = value;
+        isReadyLoja = true;
+        isNotFoundLoja = false;
+        buscaDeptosProdutos(codloja);
+      });
+
+    });
+  }
+
+  Future<void>buscaDeptosProdutos(String codloja)async{
+
+    departamentos = await repositoryDepto.getDeptosFuture(codloja,this);
     promocoes = await repositoryProdutos.getProdutosFuture('promocao',codloja);
     produtosFull = await repositoryProdutos.getProdutosFuture('',codloja);
-
+    
     setState(() {
-      isReady = loja.nome!.isNotEmpty;
-      hasData = produtosFull.isNotEmpty;
+      hasData = departamentos.isNotEmpty;
+      isReadyDepto = true;
     });
 
   }
 
   @override
   Widget build(BuildContext context) {
+
     size = MediaQuery.of(context).size;
     _tabController = TabController(length: departamentos.length, vsync: this);
 
@@ -319,19 +349,59 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
         ),
       );
     }else{
-      if(isReady ){
-        return Scaffold(
-          body: NestedScrollView(
-              headerSliverBuilder: (context, innerBoxIsScrolled) {
-                return <Widget>[
-                  buildHeader(),
-                  buildPromocao(),
-                  buildTabBar(),
-                ];
-              },
-              body: buildBody()
-          ),
-        );
+      if(isReadyLoja){
+          return _lojaErrorCode == 0
+              ? Scaffold(
+              body: NestedScrollView(
+                  headerSliverBuilder: (context, innerBoxIsScrolled) {
+                    return <Widget>[
+                      buildHeader(),
+                      buildPromocao(),
+                      buildTabBar(),
+                    ];
+                  },
+                  body: buildBody()
+              )
+          )
+              : Scaffold(
+            body: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    margin: EdgeInsets.all(10),
+                    padding: EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(60),
+                        border: Border.all(color: Colors.grey,width: 3)
+                    ),
+                    child: Icon(Icons.store_mall_directory_rounded,color: Colors.grey,size: 60,),
+                  ),
+                  Container(
+                      child: const Text(
+                          'Loja não encontrada',
+                          style: TextStyle(
+                              color: Colors.grey,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600
+                          )
+                      )
+                  ),
+                  Container(
+                      margin: EdgeInsets.all(10),
+                      child: const Text(
+                          '404 not found',
+                          style: TextStyle(
+                              color: Colors.grey,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600
+                          )
+                      )
+                  ),
+                ],
+              ),
+            ),
+          );
       }else{
         return loading();
       }
@@ -555,7 +625,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
   }
 
   buildBody() {
-    return hasData ? Container(
+    return !isReadyDepto ? loading() : hasData ? Container(
       padding: EdgeInsets.all(5),
       child: TabBarView(
         controller: _tabController,
@@ -600,6 +670,22 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
         ],
       ),
     );
+  }
+
+
+  @override
+  void callbackErrorDepto(int errorCode, String errorMessage) {
+    _deptoErrorCode = errorCode;
+    _deptoErrorMessage = errorMessage;
+    isReadyDepto = true;
+  }
+
+  @override
+  void callbackErrorLoja(int lojaErrorCode, String lojaErrorMessage) {
+    setState(() {
+      _lojaErrorCode = lojaErrorCode;
+      _lojaErrorMessage = lojaErrorMessage;
+    });
   }
 
 }

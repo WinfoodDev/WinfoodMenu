@@ -2,12 +2,13 @@ import 'dart:developer';
 
 import 'package:dio/dio.dart';
 import 'package:winfood_menu/model/departamentos_model.dart';
+import 'package:winfood_menu/repository/loja_repository.dart';
 
 import '../custom_dio.dart';
 import '../model/produtos_model.dart';
 
 class DeptoRepository{
-  Future<List<DepartamentosModel>> getDeptosFuture(String codLoja) async {
+  Future<List<DepartamentosModel>> getDeptosFuture(String codLoja,HandlerErrorDepto handlerError) async {
 
     var _dio = CustomDio().getInstance();
     _dio.options
@@ -32,9 +33,14 @@ class DeptoRepository{
       log('RESPONSE DEPARTAMENTOS:${response.statusCode}');
       departamentos = response.data.map<DepartamentosModel>((e) => DepartamentosModel.fromJson(e)).toList();
     } catch (error, stacktrace) {
+      handlerError.callbackErrorDepto(error.hashCode, error.toString());
       log('ERROR DEPARTAMENTOS:${error}');
       log('STACKTRACE DEPARTAMENTOS:${stacktrace}');
     }
     return departamentos;
   }
+}
+
+abstract class HandlerErrorDepto{
+  void callbackErrorDepto(int statusCode, String statusMessage);
 }

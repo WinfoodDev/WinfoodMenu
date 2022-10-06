@@ -7,7 +7,7 @@ import '../custom_dio.dart';
 
 class LojaRepository{
 
-  Future<Loja> getLojaFuture(String codLoja) async {
+  Future<Loja> getLojaFuture(String codLoja, HandlerErrorLoja handlerError) async {
 
     var _dio = CustomDio().getInstance();
     _dio.options
@@ -30,13 +30,19 @@ class LojaRepository{
 
     try {
       response = await _dio.post("/api/retornaloja", data: param);
-      log('RESPONSE CODLOJA:${codLoja}:${response.statusCode}');
+      log('RESPONSE CODLOJA:${codLoja} STATUSCODE:${response.statusCode}');
+      log('RESPONSE CODLOJA:${codLoja} JSON:${response.data}');
       loja = Loja.fromJson(response.data);
     } catch (error, stacktrace) {
-      log('ERROR CODLOJA: ${codLoja}:${error}');
-      log('STACKTRACE CODLOJA: ${codLoja}:${stacktrace}');
+      handlerError.callbackErrorLoja(error.hashCode,error.toString());
+      log('ERROR CODLOJA:${codLoja} ERROR:${error.hashCode}');
+      log('STACKTRACE CODLOJA:${codLoja} STACK:${stacktrace}');
     }
     return loja;
   }
 
+}
+
+abstract class HandlerErrorLoja{
+  void callbackErrorLoja(int statusCode, String statusMessage);
 }
